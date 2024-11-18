@@ -25,7 +25,7 @@ To get started with this bot, follow these steps:
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/ganjsmoke/Memes-war-bot.git
+   git clone https://github.com/Animehub4u/Memes-war-bot.git
    cd Memes-war-bot
    ```
 

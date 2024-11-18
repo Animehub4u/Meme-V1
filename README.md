@@ -1,7 +1,7 @@
 
 # Memes War Bot
 
-Please support the author by using the referral link to get started: [https://t.me/Memes_War_Start_Bot/MemesWar?startapp=VVQN29](https://t.me/Memes_War_Start_Bot/MemesWar?startapp=VVQN29)
+Please support the author by using the referral link to get started: [https://t.me/Memes_War_Start_Bot/MemesWar?startapp=XYJMJD](https://t.me/Memes_War_Start_Bot/MemesWar?startapp=XYJMJD)
 
 ---
 
@@ -69,10 +69,10 @@ To get started with this bot, follow these steps:
 
 ## Author
 
-Bot created by: [https://t.me/airdropwithmeh](https://t.me/airdropwithmeh)
+Bot created by: [https://t.me/airdropscriptzone](https://t.me/airdropscriptzone)
 
 ---
 
 ### Support
 
-Feel free to reach out on [author's Telegram channel](https://t.me/airdropwithmeh) for support or if you find this bot helpful!
+Feel free to reach out on [author's Telegram channel](https://t.me/airdropscriptzone) for support or if you find this bot helpful!

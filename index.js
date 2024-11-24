@@ -196,82 +196,129 @@ async function getQuestList(queryId) {
 }
 
 
-async function verifyTask(queryId, questId) {
+async function verifyTask(queryId, questId, questType) {
   try {
     const encodedQueryId = encodeURIComponent(queryId); // Encode queryId for use in headers
     const headers = {
       Cookie: `telegramInitData=${encodedQueryId}`, // Using encodedQueryId in headers
       'User-Agent': queryIdUserAgentMap.get(queryId), // Using User-Agent from the map
     };
+
+    // Determine the correct endpoint based on the quest type
+    const apiUrl =
+      questType === "daily"
+        ? `https://memes-war.memecore.com/api/quest/daily/${questId}/progress`
+        : `https://memes-war.memecore.com/api/quest/general/${questId}/progress`;
+
     const payload = {
       data: {
         status: "VERIFY",
         rewards: []
       }
     };
-    const response = await axios.post(`https://memes-war.memecore.com/api/quest/daily/${questId}/progress`, payload, { headers });
+
+    const response = await axios.post(apiUrl, payload, { headers });
+    if (response.data && response.data.status === 200) {
+      console.log(chalk.green(`Task verified successfully for Quest ID: ${questId}`));
+    } else {
+      console.log(chalk.yellow(`Unexpected response: ${JSON.stringify(response.data)}`));
+    }
+
     return response.data; // Return the response from the verify task
   } catch (error) {
     console.error(chalk.red('Error verifying task:', error));
   }
 }
 
-async function claimTask(queryId, questId) {
+
+async function claimTask(queryId, questId, questType) {
   try {
     const encodedQueryId = encodeURIComponent(queryId); // Encode queryId for use in headers
     const headers = {
       Cookie: `telegramInitData=${encodedQueryId}`, // Using encodedQueryId in headers
       'User-Agent': queryIdUserAgentMap.get(queryId), // Using User-Agent from the map
     };
+
+    // Determine the correct endpoint based on the quest type
+    const apiUrl =
+      questType === "daily"
+        ? `https://memes-war.memecore.com/api/quest/daily/${questId}/progress`
+        : `https://memes-war.memecore.com/api/quest/general/${questId}/progress`;
+
     const payload = {
       data: {
         status: "CLAIM",
         rewards: []
       }
     };
-    const response = await axios.post(`https://memes-war.memecore.com/api/quest/daily/${questId}/progress`, payload, { headers });
+
+    const response = await axios.post(apiUrl, payload, { headers });
+    if (response.data && response.data.status === 200) {
+      console.log(chalk.green(`Task claimed successfully for Quest ID: ${questId}`));
+    } else {
+      console.log(chalk.yellow(`Unexpected response: ${JSON.stringify(response.data)}`));
+    }
+
     return response.data; // Return the response from the claim task
   } catch (error) {
     console.error(chalk.red('Error claiming task:', error));
   }
 }
 
-async function claimTaskReward(queryId, questId, rewards) {
+
+async function claimTaskReward(queryId, questId, rewards, questType) {
   try {
     const encodedQueryId = encodeURIComponent(queryId); // Encode queryId for use in headers
     const headers = {
       Cookie: `telegramInitData=${encodedQueryId}`, // Using encodedQueryId in headers
       'User-Agent': queryIdUserAgentMap.get(queryId), // Using User-Agent from the map
     };
+
+    // Determine the correct endpoint based on the quest type
+    const apiUrl =
+      questType === "daily"
+        ? `https://memes-war.memecore.com/api/quest/daily/${questId}/progress`
+        : `https://memes-war.memecore.com/api/quest/general/${questId}/progress`;
+
     const payload = {
       data: {
         status: "DONE",
         rewards: rewards
       }
     };
-    const response = await axios.post(`https://memes-war.memecore.com/api/quest/daily/${questId}/progress`, payload, { headers });
+
+    const response = await axios.post(apiUrl, payload, { headers });
+    if (response.data && response.data.status === 200) {
+      console.log(chalk.green(`Rewards claimed successfully for Quest ID: ${questId}`));
+    } else {
+      console.log(chalk.yellow(`Unexpected response: ${JSON.stringify(response.data)}`));
+    }
+
     return response.data; // Return the response from claiming rewards
   } catch (error) {
     console.error(chalk.red('Error claiming task reward:', error));
   }
 }
 
+
 async function processQuests(queryId) {
   const quests = await getQuestList(queryId); // Fetch the quest list
   for (const quest of quests) {
-    console.log(chalk.magenta(`Processing Quest: ${quest.title} (ID: ${quest.id})`));
+    console.log(chalk.magenta(`Processing Quest: ${quest.title} (ID: ${quest.id}, Type: ${quest.type})`));
     
+    const questType = quest.type; // Assume quest.type is either "daily" or "general"
+
     switch (quest.status) {
       case 'GO':
         console.log(chalk.yellow(`Quest is ready to verify...`));
-        const verifyResponse = await verifyTask(queryId, quest.id); // Verify the task
+        const verifyResponse = await verifyTask(queryId, quest.id, questType); // Pass questType
         if (verifyResponse) {
           console.log(chalk.green(`Task verified: ${quest.title}`));
-          
+
           // Delay for 5 seconds after verifying
           await new Promise(resolve => setTimeout(resolve, 5000));
 
-          const claimResponse = await claimTask(queryId, quest.id); // Claim the task
+          const claimResponse = await claimTask(queryId, quest.id, questType); // Pass questType
           if (claimResponse) {
             console.log(chalk.green(`Task claimed: ${quest.title}`));
             const rewards = quest.rewards; // Extract rewards from the quest
@@ -283,7 +330,7 @@ async function processQuests(queryId) {
 
       case 'VERIFY':
         console.log(chalk.yellow(`Quest is in VERIFY status. Claiming task...`));
-        const claimTaskResponse = await claimTask(queryId, quest.id); // Claim the task
+        const claimTaskResponse = await claimTask(queryId, quest.id, questType); // Pass questType
         if (claimTaskResponse) {
           console.log(chalk.green(`Task claimed: ${quest.title}`));
 
@@ -317,6 +364,7 @@ async function processQuests(queryId) {
     console.log(chalk.blue(`--- Finished processing ${quest.title} ---`));
   }
 }
+
 
 
 async function processAccount(queryId) {

@@ -177,13 +177,24 @@ async function getQuestList(queryId) {
       Cookie: `telegramInitData=${encodedQueryId}`,
       'User-Agent': queryIdUserAgentMap.get(queryId), // Using User-Agent from the map
     };
-    const response = await axios.get('https://memes-war.memecore.com/api/quest/daily/list', { headers });
-    return response.data.data.quests; // Return the list of quests
+
+    // Fetch quests from both endpoints
+    const [dailyResponse, generalResponse] = await Promise.all([
+      axios.get('https://memes-war.memecore.com/api/quest/daily/list', { headers }),
+      axios.get('https://memes-war.memecore.com/api/quest/general/list', { headers }),
+    ]);
+
+    // Combine quests from both responses
+    const dailyQuests = dailyResponse.data?.data?.quests || [];
+    const generalQuests = generalResponse.data?.data?.quests || [];
+
+    return [...dailyQuests, ...generalQuests]; // Combine and return all quests
   } catch (error) {
     console.error(chalk.red('Error fetching quest list:', error));
     return []; // Return an empty array in case of error
   }
 }
+
 
 async function verifyTask(queryId, questId) {
   try {
